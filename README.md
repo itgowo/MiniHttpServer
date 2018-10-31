@@ -1,5 +1,8 @@
 # MiniHttpServer
 Mini Http Server for Java (android)
+
+[最新版本](https://bintray.com/itgowo/maven/MiniHttpServer)
+
  *  Github:https://github.com/hnsugar
  *  Github:https://github.com/itgowo
  *  website:http://itgowo.com
@@ -24,7 +27,7 @@ Mini Http Server for Java (android)
 <dependency>
   <groupId>com.itgowo</groupId>
   <artifactId>MiniHttpServer</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <type>pom</type>
 </dependency>
 ```
