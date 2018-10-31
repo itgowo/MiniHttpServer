@@ -134,11 +134,31 @@ public class HttpResponse {
         }
     }
 
+    public void sendFile(File file) throws IOException {
+        sendFile(file, HttpStatus.OK, 0, true);
+    }
+
     public void sendFile(File file, boolean autoHtmltoNotAttachment) throws IOException {
+        sendFile(file, HttpStatus.OK, 0, autoHtmltoNotAttachment);
+    }
+
+    /**
+     * 向客户端发送文件
+     *
+     * @param file                    待发送文件
+     * @param httpStatus
+     * @param cacheControl            单位秒，缓存策略，如果设置合适时间，规定时间内浏览器不会再请求文件，可以降低服务器压力
+     * @param autoHtmltoNotAttachment 为true，html类型文件不会携带附件参数，浏览器可以直接打开显示，包含附件参数则为下载。
+     * @throws IOException
+     */
+    public void sendFile(File file, HttpStatus httpStatus, int cacheControl, boolean autoHtmltoNotAttachment) throws IOException {
         try {
             if (file == null || !file.exists()) {
                 sendData(HttpStatus.NOT_FOUND);
             } else {
+                if (cacheControl > 0 && !header.containsKey(HttpHeaderNames.CACHE_CONTROL)) {
+                    header.put(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.MAX_AGE + "=" + cacheControl);
+                }
                 boolean isAttachment = true;
                 if (autoHtmltoNotAttachment) {
                     isAttachment = !(file.getName().endsWith(".html") || file.getName().endsWith(".htm"));
@@ -148,7 +168,7 @@ public class HttpResponse {
                 FileChannel dest = fileInputStream.getChannel();
                 MappedByteBuffer mappedByteBuffer = dest.map(FileChannel.MapMode.READ_ONLY, 0, dest.size());
                 this.data = mappedByteBuffer;
-                sendData(HttpStatus.OK);
+                sendData(httpStatus);
             }
         } catch (Exception e) {
             try {
@@ -170,7 +190,8 @@ public class HttpResponse {
             this.data = ByteBuffer.wrap(data.getBytes("utf-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        } return this;
+        }
+        return this;
     }
 
     public HttpStatus getStatus() {

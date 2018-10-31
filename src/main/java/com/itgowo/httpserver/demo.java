@@ -29,7 +29,13 @@ public class demo {
                     if (httpRequest.getUri().equalsIgnoreCase("/")) {
                         httpRequest.setUri("/index.html");
                     }
-                    httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()), true);
+                    //缓存策略，浏览器指定时间内只获取一次文件,如果sendFile()包含cacheControl参数，则不需要在设置，设置了以单独设置为准。没有cacheControl的方法则默认没有此参数
+                    httpResponse.addHeader(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.MAX_AGE + "=3600");
+
+//                    httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()));
+//                    httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()), true);
+                    //cacheControl参数添加了不一定起作用，如果单独加了header，则此方法参数无效
+                    httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()), HttpStatus.OK, 3600, true);
                 }
 
 

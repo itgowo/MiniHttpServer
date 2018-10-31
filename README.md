@@ -28,14 +28,14 @@ Mini Http Server for Java (android)
 <dependency>
   <groupId>com.itgowo</groupId>
   <artifactId>MiniHttpServer</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.6</version>
   <type>pom</type>
 </dependency>
 ```
 
 2. Gradle
 ```
-implementation 'com.itgowo:MiniHttpServer:0.0.3'
+implementation 'com.itgowo:MiniHttpServer:0.0.6'
 ```
 
 ### 初始化(发布到仓库的Jar中有Demo类，可以参考)
@@ -112,7 +112,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |addHeader(String name, String value)|添加返回客户端Http的header信息|
 |sendOptionsResult()|返回Options请求回答，默认允许所有|
 |sendRedirect(String newUrl)|让客户端重定向到新地址|
-|sendFile(File file, boolean autoHtmltoNotAttachment)|向客户端发送符合Http协议的文件，如果是html文件，则没有attachment标记，浏览器不按附件下载，按网页打开|
+|sendFile(File file, HttpStatus httpStatus, boolean autoHtmltoNotAttachment)|向客户端发送符合Http协议的文件，如果是html文件，则没有attachment标记，浏览器不按附件下载，按网页打开|
 |sendData(HttpStatus status)|向客户端发送信息，如果有body需先setBody()|
 |getDefaultMimeType(File file)|根据文件扩展名返回ContentType|
 
@@ -138,7 +138,13 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
         if (httpRequest.getUri().equalsIgnoreCase("/")) {
             httpRequest.setUri("/index.html");
         }
-        httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()), true);
+        //缓存策略，浏览器指定时间内只获取一次文件,如果sendFile()包含cacheControl参数，则不需要在设置，设置了以单独设置为准。没有cacheControl的方法则默认没有此参数
+        httpResponse.addHeader(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.MAX_AGE + "=3600");
+
+//      httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()));
+//      httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()), true);
+        //cacheControl参数添加了不一定起作用，如果单独加了header，则此方法参数无效
+        httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()), HttpStatus.OK, 3600, true);
     }
 ```
 
