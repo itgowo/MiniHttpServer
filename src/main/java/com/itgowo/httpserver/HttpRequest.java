@@ -20,13 +20,13 @@ import java.util.Map;
 public class HttpRequest {
     private SocketChannel socketChannel;
     private String clientId;
-    private String uri;
     private HttpMethod method;
+    private String uri;
+    private String protocolVersion;
+    private String queryParameterString;
     private Map<String, String> parms;
     private Map<String, String> headers;
-    private String queryParameterString;
     private String remoteIp;
-    private String protocolVersion;
     private long contentLength;
     private boolean multipart_formdata;
     private String body;
@@ -86,7 +86,7 @@ public class HttpRequest {
         return headers.containsKey(key);
     }
 
-    public HttpRequest addToFileList(String key, File file) {
+    protected HttpRequest addToFileList(String key, File file) {
         if (fileList == null) {
             multipart_formdata = true;
             fileList = new HashMap<>();
@@ -95,7 +95,7 @@ public class HttpRequest {
         return this;
     }
 
-    public HttpRequest addFileList(Map<String, File> fileList) {
+    protected HttpRequest addFileList(Map<String, File> fileList) {
         if (this.fileList == null) {
             this.fileList = new HashMap<>();
         }
@@ -190,6 +190,10 @@ public class HttpRequest {
         return this;
     }
 
+    /**
+     * 向客户端发送消息，最原始方式，http协议格式请用HttpResponse
+     */
+    @Deprecated
     public void sendData(ByteBuffer byteBuffer) throws IOException {
         socketChannel.write(byteBuffer);
         if (!isKeepAlive()) {

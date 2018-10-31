@@ -1,2 +1,91 @@
-# miniHttpServer
-mini http server for Java (android)
+# MiniHttpServer
+Mini Http Server for Java (android)
+
+### 开发环境
+    Mac OS 10、Java 1.8、IDEA（Gradle工程）
+
+### 介绍
+        基于Java Nio实现Server，ServerSocket单独使用一个线程处理Selector事件并解析
+    Http报文信息创建HttpRequest和HttpResponse，然后创建线程执行回调处理事件。
+### 特性
+
+    1. 基于Java Nio，异步实现消息机制。
+    2. Http解析成功后在新线程里返回。
+    3. 支持POST表单数据和文件上传，支持PUT上传文件，自动保存到temp目录。
+    4. 支持发送文件到客户端。
+    5. 支持发送重定向等基本http协议内容。
+
+### 引入
+1. Maven
+```
+<dependency>
+  <groupId>com.itgowo</groupId>
+  <artifactId>MiniHttpServer</artifactId>
+  <version>0.0.2</version>
+  <type>pom</type>
+</dependency>
+```
+
+2. Gradle
+```
+implementation 'com.itgowo:MiniHttpServer:0.0.2'
+```
+
+### 初始化(发布到仓库的Jar中有Demo类，可以参考)
+1. 创建MiniHttpServer
+MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServer.startServer()方法作用相同，不会冲突。
+    
+    
+    MiniHttpServer httpNioServer = new MiniHttpServer();
+    
+    
+2. 设置初始信息
+
+
+|    参数    |       推荐值       |      说明     |
+|:---:|:---: | :---:|
+|   isBlocking  |     false    |是否用阻塞模式，推荐false，Nio特点就是非阻塞|
+|inetSocketAddress|InetSocketAddress(port)|服务使用哪个端口|
+|webDir|"/web"|服务器静态目录，temp目录会在webDir中|
+|onHttpListener|new 实现类|服务器接收Http请求回调，如果是文件则FileList中有文件信息|
+
+ ```
+ public void init(boolean isBlocking, InetSocketAddress inetSocketAddress, String webDir, onHttpListener onHttpListener)
+ ```
+ 
+3. onHttpListener类
+
+`public void onError(Throwable throwable)`
+
+`public void onHandler(HttpRequest httpHander, HttpResponse httpResponse) throws Exception`
+
+
+### HttpRequest
+
+| 变量 | 说明 |
+|:---:|:---:|
+|socketChannel|与客户端连接通信的连接通道|
+|clientId|与Nio中Channel绑定，连接唯一标记|
+|method|Http报文中的请求方式（GET/POST/PUT和DELETE等|
+|uri|Http报文中Method后面的路径，最开始以"/"开始|
+|protocolVersion|Http协议版本|
+|queryParameterString|url中"?"后面参数原始数据|
+|parms|来源一:url中"?"后面解析出来的参数键值对;来源二:POST表单参数解析|
+|headers|Http的header参数，Key-Value形式|
+|remoteIp|客户端IP|
+|contentLength|body长度|
+|multipart_formdata|是否是表单数据，如果为true，则需要检查下是否有文件上传，fileList|
+|body|PUT方式的Body会存到文件里，此处值为空，POST表单上传文件，Body也为空，请检查fileList|
+|fileList|PUT方式的Body会存到fileList中，POST表单上传文件，Body也为空，也会存到fileList|
+
+|其他方法|说明|
+|:---:|:---:|
+|isApplicationJson()|ContentType是不是Json类型|
+|containsFile(String key)|fileList中是否包含该文件名的文件|
+|containsHeader(String key)|headers中是否包含该参数|
+|~~addToFileList(String key, File file)~~|添加文件到fileList，内部方法|
+|addFileList(Map<String, File> fileList)|添加到fileList，内部方法|
+|isGzip()|是否启用了Gzip，第一版不考虑加入此功能|
+|isKeepAlive()|是否保持连接|
+|sendData(ByteBuffer byteBuffer)|向客户端发送消息，最原始方式，http协议格式请用HttpResponse|
+### HttpResponse

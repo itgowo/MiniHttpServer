@@ -1,7 +1,6 @@
 package com.itgowo.httpserver;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -22,7 +21,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  *  website:http://itgowo.com
  */
 
-public class MiniHttpServer implements Runnable {
+public class MiniHttpServer extends Thread {
     private static final String TAG = "itgowo.httpNioServer";
     private ThreadPoolExecutor threadPoolExecutor;
     private ServerSocketChannel serverSocketChannel;
@@ -33,27 +32,49 @@ public class MiniHttpServer implements Runnable {
     private boolean isRunning = false;
     private boolean isBlocking = false;
 
-    public void init(boolean isBlocking, InetSocketAddress inetSocketAddress, String webDir, onHttpListener onHttpListener) throws IOException {
+    public void init(boolean isBlocking, InetSocketAddress inetSocketAddress, String webDir, onHttpListener onHttpListener) {
         this.isBlocking = isBlocking;
         this.socketAddress = inetSocketAddress;
         this.httpListener = onHttpListener;
-        serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.configureBlocking(this.isBlocking);
-        selector = Selector.open();
-        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        threadPoolExecutor = new HttpServerThreadPoolExecutor();
-        fileManager = new FileManager(webDir);
+        try {
+            serverSocketChannel = ServerSocketChannel.open();
+            serverSocketChannel.configureBlocking(this.isBlocking);
+            selector = Selector.open();
+            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            threadPoolExecutor = new HttpServerThreadPoolExecutor();
+            fileManager = new FileManager(webDir);
+        } catch (IOException e) {
+            httpListener.onError(e);
+        }
     }
 
-    public void startServer() throws IOException {
-        serverSocketChannel.bind(socketAddress);
+    public void startServer() {
+        try {
+            serverSocketChannel.bind(socketAddress);
+        } catch (IOException e) {
+            httpListener.onError(e);
+        }
         isRunning = true;
+        start();
+    }
+
+    @Override
+    public synchronized void start() {
+        if (isRunning) {
+            return;
+        }
+        startServer();
+    }
+
+    public synchronized void stopServer() {
+        isRunning = false;
     }
 
     @Override
     public void run() {
         try {
             loopListener();
+            serverSocketChannel.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
