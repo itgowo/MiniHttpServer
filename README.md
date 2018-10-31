@@ -13,13 +13,14 @@ Mini Http Server for Java (android)
 ### 介绍
         基于Java Nio实现Server，ServerSocket单独使用一个线程处理Selector事件并解析
     Http报文信息创建HttpRequest和HttpResponse，然后创建线程执行回调处理事件。
-### 特性
-
-    1. 基于Java Nio，异步实现消息机制。
-    2. Http解析成功后在新线程里返回。
-    3. 支持POST表单数据和文件上传，支持PUT上传文件，自动保存到temp目录。
-    4. 支持发送文件到客户端。
-    5. 支持发送重定向等基本http协议内容。
+### 特点
+    
+* 纯Java API实现，没有引入依赖
+* 基于Java Nio，异步实现消息机制。
+* Http解析成功后在新线程里返回。
+* 支持POST表单数据和文件上传，支持PUT上传文件，自动保存到temp目录。
+* 支持发送文件到客户端。
+* 支持发送重定向等基本http协议内容。
 
 ### 引入
 1. Maven
