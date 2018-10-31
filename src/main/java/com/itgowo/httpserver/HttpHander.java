@@ -66,17 +66,18 @@ public class HttpHander implements Runnable {
 
     /**
      * 开始解析
+     *
      * @throws IOException
      */
     private void parseHttp() throws IOException {
-        if (!socketChannel.isOpen()){
+        if (!socketChannel.isOpen()) {
             return;
         }
-        httpRequestHander = new HttpRequest(socketChannel,clientId);
-        httpResponse=new HttpResponse(httpRequestHander);
+        httpRequestHander = new HttpRequest(socketChannel, clientId);
+        httpResponse = new HttpResponse(httpRequestHander);
         ByteBuffer byteBuffer = ByteBuffer.allocate(HTTP_BUFFER);
         int endPosition = 0;
-        while (!isClosed&&socketChannel.isOpen()) {
+        while (!isClosed && socketChannel.isOpen()) {
             int result = socketChannel.read(byteBuffer);
             if (result == -1) {
                 socketChannel.close();
@@ -112,15 +113,15 @@ public class HttpHander implements Runnable {
     /**
      * 解析Body
      *
-     * @param httpHander
+     * @param httpRequest
      * @param remaining
      * @throws IOException
      */
-    private void parseBody(HttpRequest httpHander, ByteBuffer remaining) throws IOException {
-        HttpMethod method = httpHander.getMethod();
+    private void parseBody(HttpRequest httpRequest, ByteBuffer remaining) throws IOException {
+        HttpMethod method = httpRequest.getMethod();
         RandomAccessFile randomAccessFile = null;
         if (HttpMethod.PUT.equals(method) || HttpMethod.POST.equals(method)) {
-            long size = httpHander.getContentLength();
+            long size = httpRequest.getContentLength();
             ByteArrayOutputStream baos = null;
             DataOutput request_data_output = null;
             if (size < HTTP_BUFFER) {
@@ -154,9 +155,9 @@ public class HttpHander implements Runnable {
                 fbuf = randomAccessFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, randomAccessFile.length());
                 randomAccessFile.seek(0);
             }
-            if (HttpMethod.POST.equals(httpHander.getMethod())) {
+            if (HttpMethod.POST.equals(httpRequest.getMethod())) {
                 String contentType = "";
-                String contentTypeHeader = httpHander.getHeaders().get(HttpHeaderNames.CONTENT_TYPE);
+                String contentTypeHeader = httpRequest.getHeaders().get(HttpHeaderNames.CONTENT_TYPE);
                 StringTokenizer st = null;
                 if (contentTypeHeader != null) {
                     st = new StringTokenizer(contentTypeHeader, ",; ");
@@ -167,23 +168,23 @@ public class HttpHander implements Runnable {
 
                 if (HttpHeaderValues.MULTIPART_FORM_DATA.equalsIgnoreCase(contentType)) {
                     if (st.hasMoreTokens()) {
-                        parseMultipartFormData(httpHander, getAttributeFromContentHeader(contentTypeHeader, BOUNDARY_PATTERN, null),
+                        parseMultipartFormData(httpRequest, getAttributeFromContentHeader(contentTypeHeader, BOUNDARY_PATTERN, null),
                                 getAttributeFromContentHeader(contentTypeHeader, CHARSET_PATTERN, "UTF-8"), fbuf);
-                        httpHander.setMultipart_formdata(true);
+                        httpRequest.setMultipart_formdata(true);
                     }
                 } else {
                     byte[] postBytes = new byte[fbuf.remaining()];
                     fbuf.get(postBytes);
                     String postLine = new String(postBytes).trim();
                     if (HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.equalsIgnoreCase(contentType)) {
-                        httpHander.getParms().putAll(parseParms(postLine));
+                        httpRequest.getParms().putAll(parseParms(postLine));
                     } else if (postLine.length() != 0) {
-                        httpHander.setBody(postLine).setMultipart_formdata(false);
+                        httpRequest.setBody(postLine).setMultipart_formdata(false);
                     }
                 }
 
-            } else if (HttpMethod.PUT.equals(httpHander.getMethod())) {
-                httpHander.addToFileList("content", saveTmpFile(fbuf, 0, fbuf.limit(), null));
+            } else if (HttpMethod.PUT.equals(httpRequest.getMethod())) {
+                httpRequest.addToFileList("content", saveTmpFile(fbuf, 0, fbuf.limit(), null));
             }
         }
     }
@@ -231,13 +232,13 @@ public class HttpHander implements Runnable {
     /**
      * 解析表单数据
      *
-     * @param httpHander
-     * @param boundary   分割符
-     * @param encoding   编码信息
-     * @param byteBuffer 如果文件特别大，最好用内存映射的MappedByteBuffer 减少内存oom
+     * @param httpRequest
+     * @param boundary    分割符
+     * @param encoding    编码信息
+     * @param byteBuffer  如果文件特别大，最好用内存映射的MappedByteBuffer 减少内存oom
      * @throws IOException
      */
-    private void parseMultipartFormData(HttpRequest httpHander, String boundary, String encoding, ByteBuffer byteBuffer) throws IOException {
+    private void parseMultipartFormData(HttpRequest httpRequest, String boundary, String encoding, ByteBuffer byteBuffer) throws IOException {
         int[] boundary_idxs = getBoundaryPositions(byteBuffer, boundary.getBytes());
         if (boundary_idxs.length < 2) {
             onServerBadRequest("BAD REQUEST: Content type is multipart/form-data but contains less than two boundary strings.");
@@ -301,19 +302,19 @@ public class HttpHander implements Runnable {
                 byte[] data_bytes = new byte[part_data_end - part_data_start];
                 byteBuffer.get(data_bytes);
                 String body = new String(data_bytes, encoding);
-                httpHander.getParms().put(part_name, body);
+                httpRequest.getParms().put(part_name, body);
             } else {
                 File file = saveTmpFile(byteBuffer, part_data_start, part_data_end - part_data_start, file_name);
-                if (!httpHander.containsFile(part_name)) {
-                    httpHander.addToFileList(part_name, file);
+                if (!httpRequest.containsFile(part_name)) {
+                    httpRequest.addToFileList(part_name, file);
                 } else {
                     int count = 2;
-                    while (httpHander.containsFile(part_name + count)) {
+                    while (httpRequest.containsFile(part_name + count)) {
                         count++;
                     }
-                    httpHander.addToFileList(part_name + count, file);
+                    httpRequest.addToFileList(part_name + count, file);
                 }
-                httpHander.getParms().put(part_name, file_name);
+                httpRequest.getParms().put(part_name, file_name);
             }
         }
     }
@@ -358,12 +359,13 @@ public class HttpHander implements Runnable {
 
     /**
      * 解析http header
+     *
      * @param header
-     * @param httpHander
+     * @param httpRequest
      * @param remaining
      * @throws IOException
      */
-    private void parseHttpHeader(String header, HttpRequest httpHander, int remaining) throws IOException {
+    private void parseHttpHeader(String header, HttpRequest httpRequest, int remaining) throws IOException {
         BufferedReader reader = new BufferedReader(new StringReader(header));
         String inLine = reader.readLine();
         if (inLine == null) {
@@ -371,41 +373,41 @@ public class HttpHander implements Runnable {
         }
         StringTokenizer requestLine = new StringTokenizer(inLine);
         if (requestLine.countTokens() < 2) {
-            onServerBadRequest("BAD REQUEST:parse http error:"+inLine);
-            httpListener.onError(new Throwable("BAD REQUEST:parse http error:"+inLine));
+            onServerBadRequest("BAD REQUEST:parse http error:" + inLine);
+            httpListener.onError(new Throwable("BAD REQUEST:parse http error:" + inLine));
         }
-        httpHander.setMethod(HttpMethod.find(requestLine.nextToken()));
+        httpRequest.setMethod(HttpMethod.find(requestLine.nextToken()));
 
         String uri = requestLine.nextToken();
         int qmi = uri.indexOf('?');
         if (qmi >= 0) {
-            httpHander.setQueryParameterString(uri.substring(qmi + 1));
-            httpHander.setParms(parseParms(httpHander.getQueryParameterString()));
+            httpRequest.setQueryParameterString(uri.substring(qmi + 1));
+            httpRequest.setParms(parseParms(httpRequest.getQueryParameterString()));
             uri = decodeURLString(uri.substring(0, qmi));
         } else {
             uri = decodeURLString(uri);
         }
-        httpHander.setUri(uri);
+        httpRequest.setUri(uri);
 
         if (requestLine.hasMoreTokens()) {
-            httpHander.setProtocolVersion(requestLine.nextToken());
+            httpRequest.setProtocolVersion(requestLine.nextToken());
         } else {
-            httpHander.setProtocolVersion("HTTP/1.1");
+            httpRequest.setProtocolVersion("HTTP/1.1");
         }
 
-        httpHander.setHeaders(parseHeaders(reader));
+        httpRequest.setHeaders(parseHeaders(reader));
 
         long contentLength = 0;
-        if (httpHander.getHeaders().containsKey(HttpHeaderNames.CONTENT_LENGTH)) {
+        if (httpRequest.getHeaders().containsKey(HttpHeaderNames.CONTENT_LENGTH)) {
             try {
-                contentLength = Long.parseLong(httpHander.getHeaders().get(HttpHeaderNames.CONTENT_LENGTH));
+                contentLength = Long.parseLong(httpRequest.getHeaders().get(HttpHeaderNames.CONTENT_LENGTH));
             } catch (Exception e) {
                 if (remaining > 0) {
                     contentLength = remaining;
                 }
             }
         }
-        httpHander.setContentLength(contentLength);
+        httpRequest.setContentLength(contentLength);
     }
 
     /**
@@ -478,9 +480,10 @@ public class HttpHander implements Runnable {
         int splitbyte = 0;
         while (splitbyte + 1 < buf.limit()) {
             // RFC2616
-            if (buf.array()[splitbyte] == '\r' && buf.array()[splitbyte + 1] == '\n' && splitbyte + 3 < buf.limit() && buf.array()[splitbyte + 2] == '\r' && buf.array()[splitbyte + 3] == '\n') return splitbyte + 4;
+            if (buf.array()[splitbyte] == '\r' && buf.array()[splitbyte + 1] == '\n' && splitbyte + 3 < buf.limit() && buf.array()[splitbyte + 2] == '\r' && buf.array()[splitbyte + 3] == '\n')
+                return splitbyte + 4;
             // tolerance
-            if (buf.array()[splitbyte] == '\n' && buf.array()[splitbyte + 1] == '\n')return splitbyte + 2;
+            if (buf.array()[splitbyte] == '\n' && buf.array()[splitbyte + 1] == '\n') return splitbyte + 2;
             splitbyte++;
         }
         return 0;
@@ -488,17 +491,17 @@ public class HttpHander implements Runnable {
 
     @Override
     public void run() {
-        if (httpRequestHander==null){
+        if (httpRequestHander == null) {
             return;
         }
         try {
-            httpListener.onHandler(httpRequestHander,httpResponse);
+            httpListener.onHandler(httpRequestHander, httpResponse);
         } catch (Exception e) {
             httpListener.onError(e);
         }
     }
 
-    public void onServerInternal(String msg){
+    public void onServerInternal(String msg) {
         try {
             httpResponse.setData(ByteBuffer.wrap(msg.getBytes("utf-8")));
             httpResponse.sendData(HttpStatus.INTERNAL_ERROR);
@@ -506,6 +509,7 @@ public class HttpHander implements Runnable {
             e.printStackTrace();
         }
     }
+
     public void onServerBadRequest(String msg) throws IOException {
         httpResponse.setData(ByteBuffer.wrap(msg.getBytes("utf-8")));
         httpResponse.sendData(HttpStatus.BAD_REQUEST);

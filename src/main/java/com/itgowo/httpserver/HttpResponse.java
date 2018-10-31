@@ -36,21 +36,21 @@ public class HttpResponse {
     private final Map<String, String> header = new HashMap();
     private boolean keepAlive;
 
-    protected HttpResponse(HttpRequest httpHander, HttpStatus status, String mimeType, ByteBuffer byteBuffer) {
-        this.httpRequest = httpHander;
-        this.socketChannel = httpHander.getSocketChannel();
+    protected HttpResponse(HttpRequest httpRequest, HttpStatus status, String mimeType, ByteBuffer byteBuffer) {
+        this.httpRequest = httpRequest;
+        this.socketChannel = httpRequest.getSocketChannel();
         this.status = status;
         this.mimeType = mimeType;
         this.data = byteBuffer;
-        keepAlive = httpHander.isKeepAlive();
+        keepAlive = httpRequest.isKeepAlive();
     }
 
-    public HttpResponse(HttpRequest httpHander, String mimeType) {
-        this(httpHander, HttpStatus.OK, mimeType, null);
+    public HttpResponse(HttpRequest httpRequest, String mimeType) {
+        this(httpRequest, HttpStatus.OK, mimeType, null);
     }
 
-    public HttpResponse(HttpRequest httpHander) {
-        this(httpHander, null);
+    public HttpResponse(HttpRequest httpRequest) {
+        this(httpRequest, null);
     }
 
     public void addHeader(String name, String value) {

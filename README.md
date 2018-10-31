@@ -60,7 +60,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 
 `public void onError(Throwable throwable)`
 
-`public void onHandler(HttpRequest httpHander, HttpResponse httpResponse) throws Exception`
+`public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception`
 
 
 ### HttpRequest
@@ -118,33 +118,33 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 #### 1. 获取header
 
 ```
-    Map<String, String> headers = httpHander.getHeaders();
-    boolean hasContentType = httpHander.containsHeader(HttpHeaderNames.CONTENT_TYPE);
-    String contentType = httpHander.getHeaders().get(HttpHeaderNames.CONTENT_TYPE);
+    Map<String, String> headers = httpRequest.getHeaders();
+    boolean hasContentType = httpRequest.containsHeader(HttpHeaderNames.CONTENT_TYPE);
+    String contentType = httpRequest.getHeaders().get(HttpHeaderNames.CONTENT_TYPE);
 ```
 
 #### 2. 获取Parms，参数操作，来源一:url中"?"后面解析出来的参数键值对;来源二:POST表单参数解析
 ```
-    Map<String, String> parms = httpHander.getParms();
-    String userId = httpHander.getParms().get("userId");
+    Map<String, String> parms = httpRequest.getParms();
+    String userId = httpRequest.getParms().get("userId");
 ```
 #### 3. 客户端GET请求资源
 ``` 
-    if (HttpMethod.GET == httpHander.getMethod()) {
-        if (httpHander.getUri().equalsIgnoreCase("/")) {
-            httpHander.setUri("/index.html");
+    if (HttpMethod.GET == httpRequest.getMethod()) {
+        if (httpRequest.getUri().equalsIgnoreCase("/")) {
+            httpRequest.setUri("/index.html");
         }
-        httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpHander.getUri()), true);
+        httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpRequest.getUri()), true);
     }
 ```
 
 #### 4. 客户端POST请求，POST请求，常见的Body传Json文本或者表单上传文件
 ```
-    if (HttpMethod.POST == httpHander.getMethod()) {
-        if (httpHander.isMultipart_formdata()) {
-            Map<String, File> fileMap = httpHander.getFileList();
+    if (HttpMethod.POST == httpRequest.getMethod()) {
+        if (httpRequest.isMultipart_formdata()) {
+            Map<String, File> fileMap = httpRequest.getFileList();
         } else {
-            String requestBody = httpHander.getBody();
+            String requestBody = httpRequest.getBody();
         }
         String jsonStr = "{\"name\":\"小王\",\"age\":33}";
         httpResponse.setData(jsonStr).sendData(HttpStatus.OK);
@@ -152,14 +152,14 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 ```
 #### 5. 客户端OPTIONS请求，OPTIONS请求，跨域请求最多的是ajax发出的，应对web请求
 ```
-    if (HttpMethod.OPTIONS == httpHander.getMethod()) {
+    if (HttpMethod.OPTIONS == httpRequest.getMethod()) {
         httpResponse.sendOptionsResult();
     }
 ```
 #### 6. 客户端PUT请求，跟POST表单上传文件不同，Http中Body默认为一个文件，临时存在temp目录，PUT如果需要传递文件名请在headers中添加自定义数据。
 ```
-    if (HttpMethod.PUT == httpHander.getMethod()) {
-        Map<String, File> fileMap = httpHander.getFileList();
+    if (HttpMethod.PUT == httpRequest.getMethod()) {
+        Map<String, File> fileMap = httpRequest.getFileList();
         httpResponse.sendData(HttpStatus.OK);
     }
 ```

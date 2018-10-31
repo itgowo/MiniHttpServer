@@ -10,6 +10,7 @@ package com.itgowo.httpserver;
  */
 
 public interface onHttpListener {
-    void onHandler(HttpRequest httpHander, HttpResponse httpResponse) throws Exception;
+    void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception;
+
     void onError(Throwable throwable);
 }
