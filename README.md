@@ -1,6 +1,9 @@
 # MiniHttpServer
 Mini Http Server for Java (android)
-
+ *  Github:https://github.com/hnsugar
+ *  Github:https://github.com/itgowo
+ *  website:http://itgowo.com
+ *  QQ:1264957104
 ### 开发环境
     Mac OS 10、Java 1.8、IDEA（Gradle工程）
 
@@ -84,7 +87,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |containsFile(String key)|fileList中是否包含该文件名的文件|
 |containsHeader(String key)|headers中是否包含该参数|
 |~~addToFileList(String key, File file)~~|添加文件到fileList，内部方法|
-|addFileList(Map<String, File> fileList)|添加到fileList，内部方法|
+|~~addFileList(Map<String, File> fileList~~)|添加到fileList，内部方法|
 |isGzip()|是否启用了Gzip，第一版不考虑加入此功能|
 |isKeepAlive()|是否保持连接|
 |sendData(ByteBuffer byteBuffer)|向客户端发送消息，最原始方式，http协议格式请用HttpResponse|
@@ -108,3 +111,62 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |sendFile(File file, boolean autoHtmltoNotAttachment)|向客户端发送符合Http协议的文件，如果是html文件，则没有attachment标记，浏览器不按附件下载，按网页打开|
 |sendData(HttpStatus status)|向客户端发送信息，如果有body需先setBody()|
 |getDefaultMimeType(File file)|根据文件扩展名返回ContentType|
+
+### 情景
+
+#### 
+#### 1. 获取header
+
+```
+    Map<String, String> headers = httpHander.getHeaders();
+    boolean hasContentType = httpHander.containsHeader(HttpHeaderNames.CONTENT_TYPE);
+    String contentType = httpHander.getHeaders().get(HttpHeaderNames.CONTENT_TYPE);
+```
+
+#### 2. 获取Parms，参数操作，来源一:url中"?"后面解析出来的参数键值对;来源二:POST表单参数解析
+```
+    Map<String, String> parms = httpHander.getParms();
+    String userId = httpHander.getParms().get("userId");
+```
+#### 3. 客户端GET请求资源
+``` 
+    if (HttpMethod.GET == httpHander.getMethod()) {
+        if (httpHander.getUri().equalsIgnoreCase("/")) {
+            httpHander.setUri("/index.html");
+        }
+        httpResponse.sendFile(httpNioServer.getFileManager().getFile(httpHander.getUri()), true);
+    }
+```
+
+#### 4. 客户端POST请求，POST请求，常见的Body传Json文本或者表单上传文件
+```
+    if (HttpMethod.POST == httpHander.getMethod()) {
+        if (httpHander.isMultipart_formdata()) {
+            Map<String, File> fileMap = httpHander.getFileList();
+        } else {
+            String requestBody = httpHander.getBody();
+        }
+        String jsonStr = "{\"name\":\"小王\",\"age\":33}";
+        httpResponse.setData(jsonStr).sendData(HttpStatus.OK);
+    }
+```
+#### 5. 客户端OPTIONS请求，OPTIONS请求，跨域请求最多的是ajax发出的，应对web请求
+```
+    if (HttpMethod.OPTIONS == httpHander.getMethod()) {
+        httpResponse.sendOptionsResult();
+    }
+```
+#### 6. 客户端PUT请求，跟POST表单上传文件不同，Http中Body默认为一个文件，临时存在temp目录，PUT如果需要传递文件名请在headers中添加自定义数据。
+```
+    if (HttpMethod.PUT == httpHander.getMethod()) {
+        Map<String, File> fileMap = httpHander.getFileList();
+        httpResponse.sendData(HttpStatus.OK);
+    }
+```
+#### 7. 客户端其他请求，HEAD、DELETE、TRACE、CONNECT、PATCH 等不常见，需要自己返回结果即可，无特殊需求。
+
+
+#### 8. 重定向
+```
+    httpResponse.sendRedirect("http://www.baidu.com");
+```
