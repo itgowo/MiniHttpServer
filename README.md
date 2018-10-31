@@ -47,7 +47,10 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
     
 2. 设置初始信息
 
-
+ ```
+ public void init(boolean isBlocking, InetSocketAddress inetSocketAddress, String webDir, onHttpListener onHttpListener)
+ ```
+ 
 |    参数    |       推荐值       |      说明     |
 |---|---|---|
 |   isBlocking  |     false    |是否用阻塞模式，推荐false，Nio特点就是非阻塞|
@@ -55,9 +58,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |webDir|"/web"|服务器静态目录，temp目录会在webDir中|
 |onHttpListener|new 实现类|服务器接收Http请求回调，如果是文件则FileList中有文件信息|
 
- ```
- public void init(boolean isBlocking, InetSocketAddress inetSocketAddress, String webDir, onHttpListener onHttpListener)
- ```
+
  
 3. onHttpListener类
 
