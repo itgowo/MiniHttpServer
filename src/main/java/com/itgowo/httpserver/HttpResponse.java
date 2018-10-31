@@ -28,17 +28,16 @@ public class HttpResponse {
     public static final String OBJECT = "application/octet-stream";
 
     private SocketChannel socketChannel;
-    private HttpRequest httpHander;
+    private HttpRequest httpRequest;
 
     private HttpStatus status;
     private String mimeType;
     private ByteBuffer data;
     private final Map<String, String> header = new HashMap();
-    private HttpMethod requestMethod;
     private boolean keepAlive;
 
     protected HttpResponse(HttpRequest httpHander, HttpStatus status, String mimeType, ByteBuffer byteBuffer) {
-        this.httpHander = httpHander;
+        this.httpRequest = httpHander;
         this.socketChannel = httpHander.getSocketChannel();
         this.status = status;
         this.mimeType = mimeType;
@@ -86,7 +85,7 @@ public class HttpResponse {
             header.put(HttpHeaderNames.DATE, gmtFrmt.format(new Date()));
         }
 
-        if (httpHander.containsHeader(HttpHeaderNames.CONNECTION)) {
+        if (httpRequest.containsHeader(HttpHeaderNames.CONNECTION)) {
             header.put(HttpHeaderNames.CONNECTION, this.keepAlive ? HttpHeaderValues.KEEP_ALIVE : HttpHeaderValues.CLOSE);
         }
 
@@ -198,15 +197,6 @@ public class HttpResponse {
 
     public Map<String, String> getHeader() {
         return header;
-    }
-
-    public HttpMethod getRequestMethod() {
-        return requestMethod;
-    }
-
-    public HttpResponse setRequestMethod(HttpMethod requestMethod) {
-        this.requestMethod = requestMethod;
-        return this;
     }
 
     public boolean isKeepAlive() {

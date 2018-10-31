@@ -43,7 +43,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 
 
 |    参数    |       推荐值       |      说明     |
-|:---:|:---: | :---:|
+|---|---|---|
 |   isBlocking  |     false    |是否用阻塞模式，推荐false，Nio特点就是非阻塞|
 |inetSocketAddress|InetSocketAddress(port)|服务使用哪个端口|
 |webDir|"/web"|服务器静态目录，temp目录会在webDir中|
@@ -63,7 +63,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 ### HttpRequest
 
 | 变量 | 说明 |
-|:---:|:---:|
+|---|---|
 |socketChannel|与客户端连接通信的连接通道|
 |clientId|与Nio中Channel绑定，连接唯一标记|
 |method|Http报文中的请求方式（GET/POST/PUT和DELETE等|
@@ -79,7 +79,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |fileList|PUT方式的Body会存到fileList中，POST表单上传文件，Body也为空，也会存到fileList|
 
 |其他方法|说明|
-|:---:|:---:|
+|---|---|
 |isApplicationJson()|ContentType是不是Json类型|
 |containsFile(String key)|fileList中是否包含该文件名的文件|
 |containsHeader(String key)|headers中是否包含该参数|
@@ -89,3 +89,22 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |isKeepAlive()|是否保持连接|
 |sendData(ByteBuffer byteBuffer)|向客户端发送消息，最原始方式，http协议格式请用HttpResponse|
 ### HttpResponse
+|变量|说明|
+|---|---|
+|socketChannel|与客户端连接通信的连接通道|
+|httpRequest|httpRequest对象|
+|status|HttpStatus常量|
+|mimeType|内容类型ContentType|
+|data|返回客户端数据，ByteBuffer或其子类|
+|header|返回客户端Http的header信息|
+|keepAlive|告诉客户端是否维持连接|
+
+
+|其他方法|说明|
+|---|---|
+|addHeader(String name, String value)|添加返回客户端Http的header信息|
+|sendOptionsResult()|返回Options请求回答，默认允许所有|
+|sendRedirect(String newUrl)|让客户端重定向到新地址|
+|sendFile(File file, boolean autoHtmltoNotAttachment)|向客户端发送符合Http协议的文件，如果是html文件，则没有attachment标记，浏览器不按附件下载，按网页打开|
+|sendData(HttpStatus status)|向客户端发送信息，如果有body需先setBody()|
+|getDefaultMimeType(File file)|根据文件扩展名返回ContentType|
