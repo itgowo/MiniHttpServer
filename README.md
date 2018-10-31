@@ -31,15 +31,14 @@ Mini Http Server for Java (android)
 
 2. Gradle
 ```
-implementation 'com.itgowo:MiniHttpServer:0.0.2'
+implementation 'com.itgowo:MiniHttpServer:0.0.3'
 ```
 
 ### 初始化(发布到仓库的Jar中有Demo类，可以参考)
 1. 创建MiniHttpServer
 MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServer.startServer()方法作用相同，不会冲突。
     
-    
-    MiniHttpServer httpNioServer = new MiniHttpServer();
+`MiniHttpServer httpNioServer = new MiniHttpServer();` 
     
     
 2. 设置初始信息
