@@ -55,14 +55,11 @@ public class MiniHttpServer extends Thread {
             httpListener.onError(e);
         }
         isRunning = true;
-        start();
+        super.start();
     }
 
     @Override
     public synchronized void start() {
-        if (isRunning) {
-            return;
-        }
         startServer();
     }
 

@@ -146,6 +146,9 @@ public class HttpRequest {
     }
 
     public Map<String, String> getParms() {
+        if (parms == null) {
+            parms = new HashMap<>();
+        }
         return parms;
     }
 
@@ -155,6 +158,9 @@ public class HttpRequest {
     }
 
     public Map<String, String> getHeaders() {
+        if (headers == null) {
+            headers = new HashMap<>();
+        }
         return headers;
     }
 

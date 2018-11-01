@@ -84,6 +84,7 @@ public class HttpHander implements Runnable {
                 isClosed = true;
                 break;
             }
+//            System.out.println(new String(byteBuffer.array(),0,result));
             if (result == 0) {
                 try {
                     Thread.sleep(50);

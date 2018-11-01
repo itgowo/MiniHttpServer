@@ -28,14 +28,14 @@ Mini Http Server for Java (android)
 <dependency>
   <groupId>com.itgowo</groupId>
   <artifactId>MiniHttpServer</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
   <type>pom</type>
 </dependency>
 ```
 
 2. Gradle
 ```
-implementation 'com.itgowo:MiniHttpServer:0.0.6'
+implementation 'com.itgowo:MiniHttpServer:0.0.7'
 ```
 
 ### 初始化(发布到仓库的Jar中有Demo类，可以参考)
@@ -67,54 +67,6 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 `public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception`
 
 
-### HttpRequest
-
-| 变量 | 说明 |
-|---|---|
-|socketChannel|与客户端连接通信的连接通道|
-|clientId|与Nio中Channel绑定，连接唯一标记|
-|method|Http报文中的请求方式（GET/POST/PUT和DELETE等|
-|uri|Http报文中Method后面的路径，最开始以"/"开始|
-|protocolVersion|Http协议版本|
-|queryParameterString|url中"?"后面参数原始数据|
-|parms|来源一:url中"?"后面解析出来的参数键值对;来源二:POST表单参数解析|
-|headers|Http的header参数，Key-Value形式|
-|remoteIp|客户端IP|
-|contentLength|body长度|
-|multipart_formdata|是否是表单数据，如果为true，则需要检查下是否有文件上传，fileList|
-|body|PUT方式的Body会存到文件里，此处值为空，POST表单上传文件，Body也为空，请检查fileList|
-|fileList|PUT方式的Body会存到fileList中，POST表单上传文件，Body也为空，也会存到fileList|
-
-|其他方法|说明|
-|---|---|
-|isApplicationJson()|ContentType是不是Json类型|
-|containsFile(String key)|fileList中是否包含该文件名的文件|
-|containsHeader(String key)|headers中是否包含该参数|
-|~~addToFileList(String key, File file)~~|添加文件到fileList，内部方法|
-|~~addFileList(Map<String, File> fileList~~)|添加到fileList，内部方法|
-|isGzip()|是否启用了Gzip，第一版不考虑加入此功能|
-|isKeepAlive()|是否保持连接|
-|sendData(ByteBuffer byteBuffer)|向客户端发送消息，最原始方式，http协议格式请用HttpResponse|
-### HttpResponse
-|变量|说明|
-|---|---|
-|socketChannel|与客户端连接通信的连接通道|
-|httpRequest|httpRequest对象|
-|status|HttpStatus常量|
-|mimeType|内容类型ContentType|
-|data|返回客户端数据，ByteBuffer或其子类|
-|header|返回客户端Http的header信息|
-|keepAlive|告诉客户端是否维持连接|
-
-
-|其他方法|说明|
-|---|---|
-|addHeader(String name, String value)|添加返回客户端Http的header信息|
-|sendOptionsResult()|返回Options请求回答，默认允许所有|
-|sendRedirect(String newUrl)|让客户端重定向到新地址|
-|sendFile(File file, HttpStatus httpStatus, boolean autoHtmltoNotAttachment)|向客户端发送符合Http协议的文件，如果是html文件，则没有attachment标记，浏览器不按附件下载，按网页打开|
-|sendData(HttpStatus status)|向客户端发送信息，如果有body需先setBody()|
-|getDefaultMimeType(File file)|根据文件扩展名返回ContentType|
 
 ### 情景
 
@@ -180,3 +132,53 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 ```
     httpResponse.sendRedirect("http://www.baidu.com");
 ```
+
+## 关键类
+### HttpRequest
+
+| 变量 | 说明 |
+|---|---|
+|socketChannel|与客户端连接通信的连接通道|
+|clientId|与Nio中Channel绑定，连接唯一标记|
+|method|Http报文中的请求方式（GET/POST/PUT和DELETE等|
+|uri|Http报文中Method后面的路径，最开始以"/"开始|
+|protocolVersion|Http协议版本|
+|queryParameterString|url中"?"后面参数原始数据|
+|parms|来源一:url中"?"后面解析出来的参数键值对;来源二:POST表单参数解析|
+|headers|Http的header参数，Key-Value形式|
+|remoteIp|客户端IP|
+|contentLength|body长度|
+|multipart_formdata|是否是表单数据，如果为true，则需要检查下是否有文件上传，fileList|
+|body|PUT方式的Body会存到文件里，此处值为空，POST表单上传文件，Body也为空，请检查fileList|
+|fileList|PUT方式的Body会存到fileList中，POST表单上传文件，Body也为空，也会存到fileList|
+
+|其他方法|说明|
+|---|---|
+|isApplicationJson()|ContentType是不是Json类型|
+|containsFile(String key)|fileList中是否包含该文件名的文件|
+|containsHeader(String key)|headers中是否包含该参数|
+|~~addToFileList(String key, File file)~~|添加文件到fileList，内部方法|
+|~~addFileList(Map<String, File> fileList~~)|添加到fileList，内部方法|
+|isGzip()|是否启用了Gzip，第一版不考虑加入此功能|
+|isKeepAlive()|是否保持连接|
+|sendData(ByteBuffer byteBuffer)|向客户端发送消息，最原始方式，http协议格式请用HttpResponse|
+### HttpResponse
+|变量|说明|
+|---|---|
+|socketChannel|与客户端连接通信的连接通道|
+|httpRequest|httpRequest对象|
+|status|HttpStatus常量|
+|mimeType|内容类型ContentType|
+|data|返回客户端数据，ByteBuffer或其子类|
+|header|返回客户端Http的header信息|
+|keepAlive|告诉客户端是否维持连接|
+
+
+|其他方法|说明|
+|---|---|
+|addHeader(String name, String value)|添加返回客户端Http的header信息|
+|sendOptionsResult()|返回Options请求回答，默认允许所有|
+|sendRedirect(String newUrl)|让客户端重定向到新地址|
+|sendFile(File file, HttpStatus httpStatus, boolean autoHtmltoNotAttachment)|向客户端发送符合Http协议的文件，如果是html文件，则没有attachment标记，浏览器不按附件下载，按网页打开|
+|sendData(HttpStatus status)|向客户端发送信息，如果有body需先setBody()|
+|getDefaultMimeType(File file)|根据文件扩展名返回ContentType|

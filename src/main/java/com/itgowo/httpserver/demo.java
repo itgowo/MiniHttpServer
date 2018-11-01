@@ -6,7 +6,7 @@ import java.util.Map;
 
 
 public class demo {
-    private static final String rootDir = "/Users/lujianchao/GitDemo/RemoteDataController/RemoteDataControllerServer/web";
+    private static final String rootDir = "/Users/lujianchao/itgowo/RemoteDataControllerServer/web";
 
     public static void main(String[] args) {
         MiniHttpServer httpNioServer = new MiniHttpServer();
@@ -75,8 +75,6 @@ public class demo {
             }
         });
         httpNioServer.startServer();
-
-
     }
 
 }
