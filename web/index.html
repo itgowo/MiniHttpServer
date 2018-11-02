@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>远程调控RDC</title>
+    <script src="js/jquery.min.js"></script>
+    <script type="application/javascript">
+      var rootUrl = "http://localhost:12111"
+
+      function post() {
+        var json = getJson();
+        console.info(json)
+        $.ajax({
+          url: rootUrl,
+          type: "POST",
+          data: json,
+          contentType: "application/json",  //缺失会出现URL编码，无法转成json对象
+          success: function (result) {
+            console.info(result);
+            alert(result)
+          }
+        });
+      }
+
+      function getJson() {
+        var register = $("#form");
+        var formData = register.serialize();
+        formData = register.serializeArray();
+        //将json数组转为json 对象
+        var jsons = transformToJson(formData);
+        return JSON.stringify(jsons);
+      }
+
+
+      // 转为json数据格式
+      function transformToJson(formData) {
+        var obj = {}
+        for (var i in formData) {
+          obj[formData[i].name] = formData[i]['value'];
+        }
+        return obj;
+      }
+    </script>
+</head>
+<body>
+<div>这是MiniHttpServer测试页面</div>
+<form id="form">
+    用户名：
+    <input type="text" name="name" value="123123">
+    <br>
+    密码：
+    <input type="text" name="pwd" value="111111">
+    <input type="button" name="submit" value="登录" id="submit" onclick="post()">
+</form>
+</body>
+</html>

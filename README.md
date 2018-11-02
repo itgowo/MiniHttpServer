@@ -28,14 +28,14 @@ Mini Http Server for Java (android)
 <dependency>
   <groupId>com.itgowo</groupId>
   <artifactId>MiniHttpServer</artifactId>
-  <version>0.0.7</version>
+  <version>0.0.8</version>
   <type>pom</type>
 </dependency>
 ```
 
 2. Gradle
 ```
-implementation 'com.itgowo:MiniHttpServer:0.0.7'
+implementation 'com.itgowo:MiniHttpServer:0.0.8'
 ```
 
 ### 初始化(发布到仓库的Jar中有Demo类，可以参考)
@@ -55,7 +55,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |---|---|---|
 |   isBlocking  |     false    |是否用阻塞模式，推荐false，Nio特点就是非阻塞|
 |inetSocketAddress|InetSocketAddress(port)|服务使用哪个端口|
-|webDir|"/web"|服务器静态目录，temp目录会在webDir中|
+|webDir|"/web"|服务器静态目录，file和temp目录会在webDir中|
 |onHttpListener|new 实现类|服务器接收Http请求回调，如果是文件则FileList中有文件信息|
 
 
@@ -105,11 +105,12 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
     if (HttpMethod.POST == httpRequest.getMethod()) {
         if (httpRequest.isMultipart_formdata()) {
             Map<String, File> fileMap = httpRequest.getFileList();
+          //  httpResponse.sendData(HttpStatus.OK);
+            httpResponse.setData(Arrays.toString(fileMap.values().toArray())).sendData(HttpStatus.OK);
         } else {
             String requestBody = httpRequest.getBody();
+            httpResponse.setData(requestBody).sendData(HttpStatus.OK);
         }
-        String jsonStr = "{\"name\":\"小王\",\"age\":33}";
-        httpResponse.setData(jsonStr).sendData(HttpStatus.OK);
     }
 ```
 #### 5. 客户端OPTIONS请求，OPTIONS请求，跨域请求最多的是ajax发出的，应对web请求

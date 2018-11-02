@@ -100,7 +100,7 @@ public class HttpResponse {
         builder.append("\r\n");
         ByteBuffer header = ByteBuffer.wrap(builder.toString().getBytes("utf-8"));
         socketChannel.write(new ByteBuffer[]{header, data});
-        if (!keepAlive) {
+        if (!keepAlive && socketChannel.isOpen()) {
             socketChannel.close();
         }
     }
@@ -159,6 +159,10 @@ public class HttpResponse {
                 if (cacheControl > 0 && !header.containsKey(HttpHeaderNames.CACHE_CONTROL)) {
                     header.put(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.MAX_AGE + "=" + cacheControl);
                 }
+                if (!header.containsKey(HttpHeaderNames.CONTENT_TYPE)) {
+                    header.put(HttpHeaderNames.CONTENT_TYPE, getDefaultMimeType(file));
+                }
+
                 boolean isAttachment = true;
                 if (autoHtmltoNotAttachment) {
                     isAttachment = !(file.getName().endsWith(".html") || file.getName().endsWith(".htm"));

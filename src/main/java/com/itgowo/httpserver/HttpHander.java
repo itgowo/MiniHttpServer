@@ -41,7 +41,7 @@ public class HttpHander implements Runnable {
     private static final Pattern CONTENT_DISPOSITION_PATTERN = Pattern.compile(CONTENT_DISPOSITION_REGEX, Pattern.CASE_INSENSITIVE);
     private static final String CONTENT_DISPOSITION_ATTRIBUTE_REGEX = "[ |\t]*([a-zA-Z]*)[ |\t]*=[ |\t]*['|\"]([^\"^']*)['|\"]";
     private static final Pattern CONTENT_DISPOSITION_ATTRIBUTE_PATTERN = Pattern.compile(CONTENT_DISPOSITION_ATTRIBUTE_REGEX);
-    private static final String CONTENT_TYPE_REGEX = "([ |\t]*content-type[ |\t]*:)(.*)";
+    private static final String CONTENT_TYPE_REGEX = "([ |\t]*Content-Type[ |\t]*:)(.*)";
     private static final Pattern CONTENT_TYPE_PATTERN = Pattern.compile(CONTENT_TYPE_REGEX, Pattern.CASE_INSENSITIVE);
 
     private boolean isClosed = false;
@@ -84,7 +84,7 @@ public class HttpHander implements Runnable {
                 isClosed = true;
                 break;
             }
-//            System.out.println(new String(byteBuffer.array(),0,result));
+//            System.out.println(new String(byteBuffer.array(), 0, result));
             if (result == 0) {
                 try {
                     Thread.sleep(50);
@@ -185,7 +185,7 @@ public class HttpHander implements Runnable {
                 }
 
             } else if (HttpMethod.PUT.equals(httpRequest.getMethod())) {
-                httpRequest.addToFileList("content", saveTmpFile(fbuf, 0, fbuf.limit(), null));
+                httpRequest.addToFileList("content", saveFile(fbuf, 0, fbuf.limit(), null));
             }
         }
     }
@@ -245,14 +245,13 @@ public class HttpHander implements Runnable {
             onServerBadRequest("BAD REQUEST: Content type is multipart/form-data but contains less than two boundary strings.");
             httpListener.onError(new Exception("BAD REQUEST: Content type is multipart/form-data but contains less than two boundary strings."));
         }
-
         byte[] part_header_buff = new byte[MAX_HEADER_SIZE];
         for (int bi = 0; bi < boundary_idxs.length - 1; bi++) {
             byteBuffer.position(boundary_idxs[bi]);
             int len = (byteBuffer.remaining() < MAX_HEADER_SIZE) ? byteBuffer.remaining() : MAX_HEADER_SIZE;
             byteBuffer.get(part_header_buff, 0, len);
             BufferedReader in = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(part_header_buff, 0, len), Charset.forName(encoding)), len);
-
+            int contentLength = 2;
             int headerLines = 0;
             String mpline = in.readLine();
             headerLines++;
@@ -267,6 +266,7 @@ public class HttpHander implements Runnable {
             while (mpline != null && mpline.trim().length() > 0) {
                 Matcher matcher = CONTENT_DISPOSITION_PATTERN.matcher(mpline);
                 if (matcher.matches()) {
+                    contentLength += mpline.length() + 2;
                     String attributeString = matcher.group(2);
                     matcher = CONTENT_DISPOSITION_ATTRIBUTE_PATTERN.matcher(attributeString);
                     while (matcher.find()) {
@@ -280,6 +280,7 @@ public class HttpHander implements Runnable {
                 }
                 matcher = CONTENT_TYPE_PATTERN.matcher(mpline);
                 if (matcher.matches()) {
+                    contentLength += mpline.length() + 2;
                     content_type = matcher.group(2).trim();
                 }
                 mpline = in.readLine();
@@ -291,40 +292,35 @@ public class HttpHander implements Runnable {
                     part_header_len++;
                 }
             }
+            part_header_len++;
             if (part_header_len >= len - 4) {
                 onServerBadRequest("BAD REQUEST:Multipart header size exceeds MAX_HEADER_SIZE.");
                 httpListener.onError(new Exception("BAD REQUEST:Multipart header size exceeds MAX_HEADER_SIZE."));
             }
-            int part_data_start = boundary_idxs[bi] + part_header_len;
+            int part_data_start = boundary_idxs[bi] + part_header_len + contentLength;
             int part_data_end = boundary_idxs[bi + 1] - 4;
 
             byteBuffer.position(part_data_start);
-            if (content_type == null) {
-                byte[] data_bytes = new byte[part_data_end - part_data_start];
-                byteBuffer.get(data_bytes);
-                String body = new String(data_bytes, encoding);
-                httpRequest.getParms().put(part_name, body);
+
+            File file = saveFile(byteBuffer, part_data_start, part_data_end - part_data_start, file_name);
+            if (!httpRequest.containsFile(part_name)) {
+                httpRequest.addToFileList(part_name, file);
             } else {
-                File file = saveTmpFile(byteBuffer, part_data_start, part_data_end - part_data_start, file_name);
-                if (!httpRequest.containsFile(part_name)) {
-                    httpRequest.addToFileList(part_name, file);
-                } else {
-                    int count = 2;
-                    while (httpRequest.containsFile(part_name + count)) {
-                        count++;
-                    }
-                    httpRequest.addToFileList(part_name + count, file);
+                int count = 2;
+                while (httpRequest.containsFile(part_name + count)) {
+                    count++;
                 }
-                httpRequest.getParms().put(part_name, file_name);
+                httpRequest.addToFileList(part_name + count, file);
             }
+            httpRequest.getParms().put(part_name, file_name);
         }
     }
 
-    private File saveTmpFile(ByteBuffer b, int offset, int len, String filename_hint) {
+    private File saveFile(ByteBuffer b, int offset, int len, String filename_hint) {
         if (len > 0) {
             FileOutputStream fileOutputStream = null;
             try {
-                File tempFile = fileManager.createTempFile(filename_hint);
+                File tempFile = fileManager.createFile(filename_hint);
                 ByteBuffer src = b.duplicate();
                 fileOutputStream = new FileOutputStream(tempFile);
                 FileChannel dest = fileOutputStream.getChannel();

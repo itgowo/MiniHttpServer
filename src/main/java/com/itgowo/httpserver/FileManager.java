@@ -15,6 +15,7 @@ import java.io.RandomAccessFile;
 
 public class FileManager {
     public File tempDir;
+    public File fileDir;
     public File webDir;
 
     public FileManager(String webDir) {
@@ -22,9 +23,15 @@ public class FileManager {
         if (!this.webDir.exists()) {
             this.webDir.mkdirs();
         }
-        this.tempDir = new File(this.webDir,"temp");
-        if (!this.tempDir.exists()) {
-            this.tempDir.mkdirs();
+        this.tempDir = new File(this.webDir, "temp");
+        if (this.tempDir.exists()) {
+            deleteFile(this.tempDir);
+        }
+        this.tempDir.mkdirs();
+
+        this.fileDir = new File(this.webDir, "file");
+        if (!this.fileDir.exists()) {
+            this.fileDir.mkdirs();
         }
 
     }
@@ -37,10 +44,28 @@ public class FileManager {
      * @throws IOException
      */
     public File createTempFile(String filename) throws IOException {
+        if (!tempDir.exists()) {
+            tempDir.mkdirs();
+        }
         if (filename == null || filename.trim().length() == 0) {
             return File.createTempFile("itgowo_MiniServer_", ".tmp", tempDir);
         } else {
             File file = new File(tempDir, filename);
+            if (file.exists()) {
+                file.delete();
+            }
+            return file;
+        }
+    }
+
+    public File createFile(String filename) throws IOException {
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
+        }
+        if (filename == null || filename.trim().length() == 0) {
+            return File.createTempFile("itgowo_MiniServer_", ".tmp", fileDir);
+        } else {
+            File file = new File(fileDir, filename);
             if (file.exists()) {
                 file.delete();
             }
@@ -58,12 +83,24 @@ public class FileManager {
             File tempFile = createTempFile(null);
             return new RandomAccessFile(tempFile, "rw");
         } catch (Exception e) {
-            throw new Error(e); // we won't recover, so throw an error
+            throw new Error(e);
         }
     }
 
     public File getFile(String filename) {
-        File file = new File(webDir,filename);
+        File file = new File(webDir, filename);
         return file;
+    }
+
+    public void deleteFile(File file) {
+        if (file.isFile()) {
+            file.delete();
+        } else if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                deleteFile(files[i]);
+            }
+            file.delete();
+        }
     }
 }

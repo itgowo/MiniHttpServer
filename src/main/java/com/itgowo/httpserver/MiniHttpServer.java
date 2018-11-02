@@ -102,9 +102,7 @@ public class MiniHttpServer extends Thread {
                     channel.register(this.selector, SelectionKey.OP_READ, UUID.randomUUID().toString());
                 } else if (key.isReadable()) {
                     SocketChannel socketChannel = (SocketChannel) key.channel();
-
                     threadPoolExecutor.execute(new HttpHander(socketChannel, (String) key.attachment(), fileManager, httpListener));
-
                 }
             }
         }

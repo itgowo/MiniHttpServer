@@ -2,17 +2,20 @@ package com.itgowo.httpserver;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.Map;
 
 
 public class demo {
-    private static final String rootDir = "/Users/lujianchao/itgowo/RemoteDataControllerServer/web";
+    private static final String rootDir = "/Users/lujianchao/itgowo/MiniHttpServer/web";
 
     public static void main(String[] args) {
         MiniHttpServer httpNioServer = new MiniHttpServer();
         httpNioServer.init(false, new InetSocketAddress(12111), rootDir, new onHttpListener() {
             @Override
             public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
+//                System.out.println(httpRequest);
+
                 //headers操作
                 Map<String, String> headers = httpRequest.getHeaders();
                 boolean hasContentType = httpRequest.containsHeader(HttpHeaderNames.CONTENT_TYPE);
@@ -43,11 +46,11 @@ public class demo {
                 if (HttpMethod.POST == httpRequest.getMethod()) {
                     if (httpRequest.isMultipart_formdata()) {
                         Map<String, File> fileMap = httpRequest.getFileList();
+                        httpResponse.setData(Arrays.toString(fileMap.values().toArray())).sendData(HttpStatus.OK);
                     } else {
                         String requestBody = httpRequest.getBody();
+                        httpResponse.setData(requestBody).sendData(HttpStatus.OK);
                     }
-                    String jsonStr = "{\"name\":\"小王\",\"age\":33}";
-                    httpResponse.setData(jsonStr).sendData(HttpStatus.OK);
                 }
 
 
