@@ -1,6 +1,6 @@
 # MiniHttpServer
-Mini Http Server for Java (android)
-
+#### Mini Http Server for Java (android)
+##### A Java Nio-based http server-side framework supports form upload and file download and extension.
 [最新版本](https://bintray.com/itgowo/maven/MiniHttpServer)
 
  *  Github:https://github.com/hnsugar
@@ -18,7 +18,7 @@ Mini Http Server for Java (android)
 * 纯Java API实现，没有引入依赖
 * 基于Java Nio，异步实现消息机制。
 * Http解析成功后在新线程里返回。
-* 支持POST表单数据和文件上传，支持PUT上传文件，自动保存到temp目录。
+* 支持POST表单数据和多文件上传，支持PUT上传文件，自动保存到file目录。
 * 支持发送文件到客户端。
 * 支持发送重定向等基本http协议内容。
 
