@@ -10,6 +10,10 @@ package com.itgowo.httpserver;
  */
 
 public interface onHttpListener {
+    void onServerStarted(int port);
+
+    void onServerStoped();
+
     void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception;
 
     void onError(Throwable throwable);

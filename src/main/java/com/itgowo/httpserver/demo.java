@@ -11,7 +11,7 @@ public class demo {
 
     public static void main(String[] args) {
         MiniHttpServer httpNioServer = new MiniHttpServer();
-        httpNioServer.init(false, new InetSocketAddress(12111), rootDir, new onHttpListener() {
+        httpNioServer.init(false, new InetSocketAddress(12111), rootDir, new onSimpleHttpListener() {
             @Override
             public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
 //                System.out.println(httpRequest);

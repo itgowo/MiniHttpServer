@@ -51,6 +51,7 @@ public class MiniHttpServer extends Thread {
     public void startServer() {
         try {
             serverSocketChannel.bind(socketAddress);
+            httpListener.onServerStarted(serverSocketChannel.socket().getLocalPort());
         } catch (IOException e) {
             httpListener.onError(e);
         }
@@ -72,6 +73,7 @@ public class MiniHttpServer extends Thread {
         try {
             loopListener();
             serverSocketChannel.close();
+            httpListener.onServerStoped();
         } catch (IOException e) {
             e.printStackTrace();
         }
