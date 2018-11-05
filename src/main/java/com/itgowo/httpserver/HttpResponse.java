@@ -100,6 +100,9 @@ public class HttpResponse {
         builder.append("\r\n");
         ByteBuffer header = ByteBuffer.wrap(builder.toString().getBytes("utf-8"));
         socketChannel.write(new ByteBuffer[]{header, data});
+        while (data.hasRemaining()){
+            socketChannel.write(data);
+        }
         if (!keepAlive && socketChannel.isOpen()) {
             socketChannel.close();
         }
