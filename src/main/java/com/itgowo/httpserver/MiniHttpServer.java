@@ -90,21 +90,25 @@ public class MiniHttpServer extends Thread {
 
             Iterator keys = selector.selectedKeys().iterator();
             while (keys.hasNext()) {
-                SelectionKey key = (SelectionKey) keys.next();
-                // 删除已选的key以防重负处理
-                keys.remove();
-                // 客户端请求连接事件
-                if (key.isAcceptable()) {
-                    ServerSocketChannel server = (ServerSocketChannel) key.channel();
-                    // 获得和客户端连接的通道
-                    SocketChannel channel = server.accept();
-                    // 设置成非阻塞
-                    channel.configureBlocking(isBlocking);
-                    // 在客户端连接成功之后，为了可以接收到客户端的信息，需要给通道设置读的权限
-                    channel.register(this.selector, SelectionKey.OP_READ, UUID.randomUUID().toString());
-                } else if (key.isReadable()) {
-                    SocketChannel socketChannel = (SocketChannel) key.channel();
-                    threadPoolExecutor.execute(new HttpHander(socketChannel, (String) key.attachment(), fileManager, httpListener));
+                try {
+                    SelectionKey key = (SelectionKey) keys.next();
+                    // 删除已选的key以防重负处理
+                    keys.remove();
+                    // 客户端请求连接事件
+                    if (key.isAcceptable()) {
+                        ServerSocketChannel server = (ServerSocketChannel) key.channel();
+                        // 获得和客户端连接的通道
+                        SocketChannel channel = server.accept();
+                        // 设置成非阻塞
+                        channel.configureBlocking(isBlocking);
+                        // 在客户端连接成功之后，为了可以接收到客户端的信息，需要给通道设置读的权限
+                        channel.register(this.selector, SelectionKey.OP_READ, UUID.randomUUID().toString());
+                    } else if (key.isReadable()) {
+                        SocketChannel socketChannel = (SocketChannel) key.channel();
+                        threadPoolExecutor.execute(new HttpHander(socketChannel, (String) key.attachment(), fileManager, httpListener));
+                    }
+                } catch (Exception e) {
+                    httpListener.onError(e);
                 }
             }
         }
