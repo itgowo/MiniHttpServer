@@ -48,6 +48,17 @@ public class MiniHttpServer extends Thread {
         }
     }
 
+    /**
+     * 每次启动服务自动清理temp文件夹，但是不全部删除file目录，所以定一个规则，当达到指定容量后，删除比较老的文件。
+     * 默认是500MB空间和7天保存。
+     *
+     * @param filesize
+     * @param fileLastTime
+     */
+    public void setFileLimit(long filesize, long fileLastTime) {
+        this.fileManager.setLimitSize(filesize).setLimitTime(fileLastTime);
+    }
+
     public void startServer() {
         try {
             serverSocketChannel.bind(socketAddress);
