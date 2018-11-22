@@ -128,7 +128,7 @@ public class FileManager {
      */
     public void cleanOldFile() {
         if (this.fileDir.exists()) {
-            List<File> fileList = getFilesAll(this.fileDir);
+            List<File> fileList = getFilesAllAndRemoveEmptyDir(this.fileDir);
             long size = getFileSize(fileList);
             if (size > limitSize) {
                 long time = System.currentTimeMillis() - limitTime;
@@ -176,12 +176,16 @@ public class FileManager {
         return size;
     }
 
-    public List<File> getFilesAll(File file) {
+    public List<File> getFilesAllAndRemoveEmptyDir(File file) {
         List<File> fileList = new ArrayList<>();
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                fileList.addAll(getFilesAll(files[i]));
+            if (files.length == 0) {
+                file.delete();
+            } else {
+                for (int i = 0; i < files.length; i++) {
+                    fileList.addAll(getFilesAllAndRemoveEmptyDir(files[i]));
+                }
             }
         } else if (file.isFile()) {
             fileList.add(file);
