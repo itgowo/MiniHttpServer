@@ -1,16 +1,17 @@
 #### Mini Http Server for Java (Android)
 
 [MiniHttpServer](https://github.com/itgowo/MiniHttpServer)
+
 [最新版本](https://bintray.com/itgowo/maven/MiniHttpServer)
 
-### 开发环境
+### 一：开发环境
 Mac OS 10、Java 1.8、IDEA（Gradle工程）
 
-### 介绍
+### 二：介绍
 
 一款基于Java Nio实现的Http解析框架，支持常见的请求解析和逻辑；采用单线程解析多线程业务处理方案，内置线程池方便线程管理；支持静态文件下载；支持表单参数和文件上传，支持PUT文件上传。解析成功后返回HttpRequest和HttpResponse。除常见的接口请求返回外，HttpResponse可以向客户端发送跨域请求结果，也可以发送文件，支持区分附件模式。
 
-### 特点
+### 三：特点
 
 * 纯Java API实现，性能好
 * 基于Java Nio，异步机制，相比传统IO，有更高的性能。
@@ -22,7 +23,7 @@ Mac OS 10、Java 1.8、IDEA（Gradle工程）
 * 支持反馈跨域请求。
 * 支持自定义header。
 
-### 引入
+### 四：引入
 1. Maven
 ```
 <dependency>
@@ -38,7 +39,7 @@ Mac OS 10、Java 1.8、IDEA（Gradle工程）
 implementation 'com.itgowo:MiniHttpServer:0.0.16'
 ```
 
-### 初始化(发布到仓库的Jar中有Demo类，可以参考)
+### 五：初始化(发布到仓库的Jar中有Demo类，可以参考)
 1. 创建MiniHttpServer
 MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServer.startServer()方法作用相同，不会冲突。
     
@@ -72,7 +73,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |fileSize|1024 * 1024 * 500|file文件夹存储阈值，超过执行清理功能，|
 |fileLastTime|1000 * 60 * 60 * 24 * 7|最后编辑时间计算存储时间，默认保留7天内文件|
 
-3. onHttpListener类
+4. onHttpListener类
 
 ```
 public void onError(Throwable throwable)`
@@ -81,7 +82,7 @@ public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws
 ```
 
 
-### 情景
+### 六：情景
 
 #### 1. 获取header
 
@@ -146,7 +147,7 @@ public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws
     httpResponse.sendRedirect("http://www.baidu.com");
 ```
 
-## 关键类
+## 七：关键类
 ### HttpRequest
 
 | 变量 | 说明 |
@@ -197,7 +198,7 @@ public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws
 |getDefaultMimeType(File file)|根据文件扩展名返回ContentType|
 
 
-### 四：小期待
+### 八：小期待
 以下项目都是我围绕远程控制写的子项目。都给star一遍吧。😍
 
 |项目(Github)|语言|其他地址|运行环境|项目说明|
