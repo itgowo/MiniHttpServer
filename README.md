@@ -40,6 +40,8 @@ implementation 'com.itgowo:MiniHttpServer:0.0.16'
 ```
 
 ### 五：初始化(库Jar中有Demo类，可以参考)
+[Demo.java](https://github.com/itgowo/MiniHttpServer/blob/master/src/main/java/com/itgowo/httpserver/demo.java)
+
 1. 创建MiniHttpServer
 MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServer.startServer()方法作用相同，不会冲突。
     
