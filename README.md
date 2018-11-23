@@ -39,11 +39,13 @@ Mac OS 10、Java 1.8、IDEA（Gradle工程）
 implementation 'com.itgowo:MiniHttpServer:0.0.16'
 ```
 
-### 五：初始化(发布到仓库的Jar中有Demo类，可以参考)
+### 五：初始化(库Jar中有Demo类，可以参考)
 1. 创建MiniHttpServer
 MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServer.startServer()方法作用相同，不会冲突。
     
-`MiniHttpServer miniHttpServer = new MiniHttpServer();` 
+```
+MiniHttpServer miniHttpServer = new MiniHttpServer(); 
+```
     
     
 2. 设置初始信息
@@ -62,7 +64,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 3.设置文件存储策略
 
 当有文件上传到服务器时，默认保存在webDir里的file目录下，创建UUID命名的目录，将上传的文件放入其中，文件名已Http信息fileName命名，防止重名文件冲突。例 ***web/file/02e86423-d1bd-4218-8f70-a7c73c71bf62/test.png***
-默认每次server初始化后执行清理功能。手动执行 ***miniHttpServer.getFileManager().cleanOldFile();***
+默认每次server初始化后执行清理功能。需要手动执行使用这个方法***miniHttpServer.getFileManager().cleanOldFile();***
 
 ```
   httpServer.setFileLimit(long fileSize, long fileLastTime);
