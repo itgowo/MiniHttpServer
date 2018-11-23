@@ -10,9 +10,9 @@ public class demo {
     private static final String rootDir = "/Users/lujianchao/itgowo/MiniHttpServer/web";
 
     public static void main(String[] args) {
-        MiniHttpServer httpServer = new MiniHttpServer();
-        httpServer.setFileLimit(1024 * 1024 * 500, 1000 * 60 * 60 * 24 * 7);
-        httpServer.init(false, new InetSocketAddress(12111), rootDir, new onSimpleHttpListener() {
+        MiniHttpServer miniHttpServer = new MiniHttpServer();
+        miniHttpServer.setFileLimit(1024 * 1024 * 500, 1000 * 60 * 60 * 24 * 6);
+        miniHttpServer.init(false, new InetSocketAddress(12111), rootDir, new onSimpleHttpListener() {
             @Override
             public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
                 System.out.println(httpRequest);
@@ -36,10 +36,10 @@ public class demo {
                     //缓存策略，浏览器指定时间内只获取一次文件,如果sendFile()包含cacheControl参数，则不需要在设置，设置了以单独设置为准。没有cacheControl的方法则默认没有此参数
 //                    httpResponse.addHeader(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.MAX_AGE + "=3600");
 
-//                    httpResponse.sendFile(httpServer.getFileManager().getFile(httpRequest.getUri()));
-//                    httpResponse.sendFile(httpServer.getFileManager().getFile(httpRequest.getUri()), true);
+//                    httpResponse.sendFile(miniHttpServer.getFileManager().getFile(httpRequest.getUri()));
+//                    httpResponse.sendFile(miniHttpServer.getFileManager().getFile(httpRequest.getUri()), true);
                     //cacheControl参数添加了不一定起作用，如果单独加了header，则此方法参数无效
-                    httpResponse.sendFile(httpServer.getFileManager().getFile(httpRequest.getUri()), HttpStatus.OK, 3600, true);
+                    httpResponse.sendFile(miniHttpServer.getFileManager().getFile(httpRequest.getUri()), HttpStatus.OK, 3600, true);
                 }
 
 
@@ -81,6 +81,11 @@ public class demo {
                         httpResponse.setData(requestBody).sendData(HttpStatus.OK);
                     }
                 }
+
+                //例，触发清理文件功能
+                if (httpRequest.getUri().startsWith("/cleanOldFile")) {
+                    miniHttpServer.getFileManager().cleanOldFile();
+                }
             }
 
             @Override
@@ -88,7 +93,8 @@ public class demo {
                 throwable.printStackTrace();
             }
         });
-        httpServer.startServer();
+        miniHttpServer.startServer();
+
     }
 
 }

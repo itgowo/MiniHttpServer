@@ -24,13 +24,7 @@ public class FileManager {
     public File fileDir;
     public File webDir;
 
-
-    public FileManager setLimitSize(long limitSize) {
-        this.limitSize = limitSize;
-        return this;
-    }
-
-    public FileManager(String webDir) {
+    public void setWebDir(String webDir) {
         this.webDir = new File(webDir);
         if (!this.webDir.exists()) {
             this.webDir.mkdirs();
@@ -42,11 +36,14 @@ public class FileManager {
         this.tempDir.mkdirs();
 
         this.fileDir = new File(this.webDir, "file");
-        cleanOldFile();
         if (!this.fileDir.exists()) {
             this.fileDir.mkdirs();
         }
+    }
 
+    public FileManager setLimitSize(long limitSize) {
+        this.limitSize = limitSize;
+        return this;
     }
 
     public FileManager setLimitTime(long limitTime) {

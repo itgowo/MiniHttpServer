@@ -32,6 +32,11 @@ public class MiniHttpServer extends Thread {
     private boolean isRunning = false;
     private boolean isBlocking = false;
 
+    public MiniHttpServer() {
+        threadPoolExecutor = new HttpServerThreadPoolExecutor();
+        fileManager = new FileManager();
+    }
+
     public void init(boolean isBlocking, InetSocketAddress inetSocketAddress, String webDir, onHttpListener onHttpListener) {
         this.isBlocking = isBlocking;
         this.socketAddress = inetSocketAddress;
@@ -41,8 +46,8 @@ public class MiniHttpServer extends Thread {
             serverSocketChannel.configureBlocking(this.isBlocking);
             selector = Selector.open();
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            threadPoolExecutor = new HttpServerThreadPoolExecutor();
-            fileManager = new FileManager(webDir);
+            this.fileManager.setWebDir(webDir);
+            this.fileManager.cleanOldFile();
         } catch (IOException e) {
             httpListener.onError(e);
         }
@@ -52,11 +57,11 @@ public class MiniHttpServer extends Thread {
      * 每次启动服务自动清理temp文件夹，但是不全部删除file目录，所以定一个规则，当达到指定容量后，删除比较老的文件。
      * 默认是500MB空间和7天保存。
      *
-     * @param filesize
+     * @param fileSize
      * @param fileLastTime
      */
-    public void setFileLimit(long filesize, long fileLastTime) {
-        this.fileManager.setLimitSize(filesize).setLimitTime(fileLastTime);
+    public void setFileLimit(long fileSize, long fileLastTime) {
+        this.fileManager.setLimitSize(fileSize).setLimitTime(fileLastTime);
     }
 
     public void startServer() {
