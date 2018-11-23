@@ -2,8 +2,6 @@
 
 [MiniHttpServer](https://github.com/itgowo/MiniHttpServer)
 
-[最新版本](https://bintray.com/itgowo/maven/MiniHttpServer)
-
 ### 一：开发环境
 Mac OS 10、Java 1.8、IDEA（Gradle工程）
 
@@ -23,7 +21,7 @@ Mac OS 10、Java 1.8、IDEA（Gradle工程）
 * 支持反馈跨域请求。
 * 支持自定义header。
 
-### 四：引入
+### 四：引入（[最新版本](https://bintray.com/itgowo/maven/MiniHttpServer)）
 1. Maven
 ```
 <dependency>
