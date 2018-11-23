@@ -1,48 +1,53 @@
-# MiniHttpServer
-#### Mini Http Server for Java (android)
-##### A Java Nio-based http server-side framework supports form upload and file download and extension.
+#### Mini Http Server for Java (Android)
+
+[MiniHttpServer](https://github.com/itgowo/MiniHttpServer)
+
 [最新版本](https://bintray.com/itgowo/maven/MiniHttpServer)
 
- *  Github:https://github.com/hnsugar
- *  Github:https://github.com/itgowo
- *  website:http://itgowo.com
- *  QQ:1264957104
-### 开发环境
-    Mac OS 10、Java 1.8、IDEA（Gradle工程）
+### 一：开发环境
+Mac OS 10、Java 1.8、IDEA（Gradle工程）
 
-### 介绍
-        基于Java Nio实现Server，ServerSocket单独使用一个线程处理Selector事件并解析
-    Http报文信息创建HttpRequest和HttpResponse，然后创建线程执行回调处理事件。
-### 特点
-    
-* 纯Java API实现，没有引入依赖
-* 基于Java Nio，异步实现消息机制。
-* Http解析成功后在新线程里返回。
-* 支持POST表单数据和多文件上传，支持PUT上传文件，自动保存到file目录。
+### 二：介绍
+
+一款基于Java Nio实现的Http解析框架，支持常见的请求解析和逻辑；采用单线程解析多线程业务处理方案，内置线程池方便线程管理；支持静态文件下载；支持表单参数和文件上传，支持PUT文件上传。解析成功后返回HttpRequest和HttpResponse。除常见的接口请求返回外，HttpResponse可以向客户端发送跨域请求结果，也可以发送文件，支持区分附件模式。
+
+### 三：特点
+
+* 纯Java API实现，性能好
+* 基于Java Nio，异步机制，相比传统IO，有更高的性能。
+* 体积小，代码少，支持Http部分协议，满足绝大部分需求。
+* 支持POST表单数据和多文件上传。
+* 支持PUT上传文件，自动保存到file目录。
 * 支持发送文件到客户端。
 * 支持发送重定向等基本http协议内容。
+* 支持反馈跨域请求。
+* 支持自定义header。
 
-### 引入
+### 四：引入
 1. Maven
 ```
 <dependency>
   <groupId>com.itgowo</groupId>
   <artifactId>MiniHttpServer</artifactId>
-  <version>0.0.8</version>
+  <version>0.0.16</version>
   <type>pom</type>
 </dependency>
 ```
 
 2. Gradle
 ```
-implementation 'com.itgowo:MiniHttpServer:0.0.8'
+implementation 'com.itgowo:MiniHttpServer:0.0.16'
 ```
 
-### 初始化(发布到仓库的Jar中有Demo类，可以参考)
+### 五：初始化(库Jar中有Demo类，可以参考)
+[Demo.java](https://github.com/itgowo/MiniHttpServer/blob/master/src/main/java/com/itgowo/httpserver/demo.java)
+
 1. 创建MiniHttpServer
 MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServer.startServer()方法作用相同，不会冲突。
     
-`MiniHttpServer httpNioServer = new MiniHttpServer();` 
+```
+MiniHttpServer miniHttpServer = new MiniHttpServer(); 
+```
     
     
 2. 设置初始信息
@@ -58,19 +63,31 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |webDir|"/web"|服务器静态目录，file和temp目录会在webDir中|
 |onHttpListener|new 实现类|服务器接收Http请求回调，如果是文件则FileList中有文件信息|
 
+3.设置文件存储策略
 
- 
-3. onHttpListener类
+当有文件上传到服务器时，默认保存在webDir里的file目录下，创建UUID命名的目录，将上传的文件放入其中，文件名已Http信息fileName命名，防止重名文件冲突。例 ***web/file/02e86423-d1bd-4218-8f70-a7c73c71bf62/test.png***
+默认每次server初始化后执行清理功能。需要手动执行使用这个方法***miniHttpServer.getFileManager().cleanOldFile();***
 
-`public void onError(Throwable throwable)`
+```
+  httpServer.setFileLimit(long fileSize, long fileLastTime);
+```
 
-`public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception`
+|参数|推荐值|说明|
+|---|---|---|
+|fileSize|1024 * 1024 * 500|file文件夹存储阈值，超过执行清理功能，|
+|fileLastTime|1000 * 60 * 60 * 24 * 7|最后编辑时间计算存储时间，默认保留7天内文件|
+
+4. onHttpListener类
+
+```
+public void onError(Throwable throwable)`
+
+public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception`
+```
 
 
+### 六：情景
 
-### 情景
-
-#### 
 #### 1. 获取header
 
 ```
@@ -134,7 +151,7 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
     httpResponse.sendRedirect("http://www.baidu.com");
 ```
 
-## 关键类
+## 七：关键类
 ### HttpRequest
 
 | 变量 | 说明 |
@@ -183,3 +200,21 @@ MiniHttpServer 继承自Thread，复写了Thread.start()方法，与MiniHttpServ
 |sendFile(File file, HttpStatus httpStatus, boolean autoHtmltoNotAttachment)|向客户端发送符合Http协议的文件，如果是html文件，则没有attachment标记，浏览器不按附件下载，按网页打开|
 |sendData(HttpStatus status)|向客户端发送信息，如果有body需先setBody()|
 |getDefaultMimeType(File file)|根据文件扩展名返回ContentType|
+
+
+### 八：小期待
+以下项目都是我围绕远程控制写的子项目。都给star一遍吧。😍
+
+|项目(Github)|语言|其他地址|运行环境|项目说明|
+|---|---|---|---|---|
+|[PackageMessage](https://github.com/itgowo/PackageMessage)|Java|[简书](https://www.jianshu.com/p/8a4a0ba2f54a)|运行Java的设备|TCP粘包与半包解决方案|
+|[ByteBuffer](https://github.com/itgowo/ByteBuffer)|Java|[简书](https://www.jianshu.com/p/ba68224f30e4)|运行Java的设备|二进制处理工具类|
+|[RemoteDataControllerForAndroid](https://github.com/itgowo/RemoteDataControllerForAndroid)|Java|[简书](https://www.jianshu.com/p/eb692f5709e3)|Android设备|远程数据调试Android端|
+|[RemoteDataControllerForWeb](https://github.com/itgowo/RemoteDataControllerForWeb)|JavaScript|[简书](https://www.jianshu.com/p/75747ff4667f)|浏览器|远程数据调试控制台Web端|
+|[RemoteDataControllerForServer](https://github.com/itgowo/RemoteDataControllerForServer)|Java|[简书](https://www.jianshu.com/p/3858c7e26a98)|运行Java的设备|远程数据调试Server端|
+|[MiniHttpClient](https://github.com/itgowo/MiniHttpClient)|Java|[简书](https://www.jianshu.com/p/41b0917271d3)|运行Java的设备|精简的HttpClient|
+|[MiniHttpServer](https://github.com/itgowo/MiniHttpServer)|Java|[简书](https://www.jianshu.com/p/de98fa07140d)|运行Java的设备|支持部分Http协议的Server|
+|[DataTables.AltEditor](https://github.com/itgowo/DataTables.AltEditor)|JavaScript|[简书](https://www.jianshu.com/p/a28d5a4c333b)|浏览器|Web端表格编辑组件|
+
+[我的小站：IT狗窝](http://itgowo.com)
+技术联系QQ:1264957104
