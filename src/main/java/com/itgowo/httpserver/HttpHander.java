@@ -320,7 +320,7 @@ public class HttpHander implements Runnable {
         if (len > 0) {
             FileOutputStream fileOutputStream = null;
             try {
-                File tempFile = fileManager.createFile(filename_hint);
+                File tempFile = fileManager.createFile(new File(filename_hint).getName());
                 ByteBuffer src = b.duplicate();
                 fileOutputStream = new FileOutputStream(tempFile);
                 FileChannel dest = fileOutputStream.getChannel();
