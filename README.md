@@ -4,7 +4,7 @@
 
 ### 一：开发环境
 Mac OS 10、Java 1.8、IDEA（Gradle工程）
-
+### Android设备需要API>=24(Android 7.0)，Java支持Nio的版本即可。
 ### 二：介绍
 
 一款基于Java Nio实现的Http解析框架，支持常见的请求解析和逻辑；采用单线程解析多线程业务处理方案，内置线程池方便线程管理；支持静态文件下载；支持表单参数和文件上传，支持PUT文件上传。解析成功后返回HttpRequest和HttpResponse。除常见的接口请求返回外，HttpResponse可以向客户端发送跨域请求结果，也可以发送文件，支持区分附件模式。
@@ -21,7 +21,7 @@ Mac OS 10、Java 1.8、IDEA（Gradle工程）
 * 支持反馈跨域请求。
 * 支持自定义header。
 
-### 四：引入（[最新版本](https://bintray.com/itgowo/maven/MiniHttpServer)）
+### 四：引入([最新版本](https://bintray.com/itgowo/maven/MiniHttpServer))
 1. Maven
 ```
 <dependency>
@@ -201,17 +201,19 @@ public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws
 
 
 ### 八：小期待
-以下项目都是我围绕远程控制写的子项目。都给star一遍吧。😍
+
+以下项目都是我围绕远程控制写的项目和子项目。都给star一遍吧。😍
 
 |项目(Github)|语言|其他地址|运行环境|项目说明|
 |---|---|---|---|---|
-|[PackageMessage](https://github.com/itgowo/PackageMessage)|Java|[简书](https://www.jianshu.com/p/8a4a0ba2f54a)|运行Java的设备|TCP粘包与半包解决方案|
-|[ByteBuffer](https://github.com/itgowo/ByteBuffer)|Java|[简书](https://www.jianshu.com/p/ba68224f30e4)|运行Java的设备|二进制处理工具类|
-|[RemoteDataControllerForAndroid](https://github.com/itgowo/RemoteDataControllerForAndroid)|Java|[简书](https://www.jianshu.com/p/eb692f5709e3)|Android设备|远程数据调试Android端|
 |[RemoteDataControllerForWeb](https://github.com/itgowo/RemoteDataControllerForWeb)|JavaScript|[简书](https://www.jianshu.com/p/75747ff4667f)|浏览器|远程数据调试控制台Web端|
+|[RemoteDataControllerForAndroid](https://github.com/itgowo/RemoteDataControllerForAndroid)|Java|[简书](https://www.jianshu.com/p/eb692f5709e3)|Android设备|远程数据调试Android端|
 |[RemoteDataControllerForServer](https://github.com/itgowo/RemoteDataControllerForServer)|Java|[简书](https://www.jianshu.com/p/3858c7e26a98)|运行Java的设备|远程数据调试Server端|
 |[MiniHttpClient](https://github.com/itgowo/MiniHttpClient)|Java|[简书](https://www.jianshu.com/p/41b0917271d3)|运行Java的设备|精简的HttpClient|
 |[MiniHttpServer](https://github.com/itgowo/MiniHttpServer)|Java|[简书](https://www.jianshu.com/p/de98fa07140d)|运行Java的设备|支持部分Http协议的Server|
+|[MiniLongConnectionServer](https://github.com/itgowo/MiniLongConnectionServer)|Java|[简书](https://www.jianshu.com/p/4b993100eae5)|运行Java的设备|TCP长连接库，支持粘包拆包处理|
+|[PackageMessage](https://github.com/itgowo/PackageMessage)|Java|[简书](https://www.jianshu.com/p/8a4a0ba2f54a)|运行Java的设备|TCP粘包与半包解决方案|
+|[ByteBuffer](https://github.com/itgowo/ByteBuffer)|Java|[简书](https://www.jianshu.com/p/ba68224f30e4)|运行Java的设备|二进制处理工具类|
 |[DataTables.AltEditor](https://github.com/itgowo/DataTables.AltEditor)|JavaScript|[简书](https://www.jianshu.com/p/a28d5a4c333b)|浏览器|Web端表格编辑组件|
 
 [我的小站：IT狗窝](http://itgowo.com)
