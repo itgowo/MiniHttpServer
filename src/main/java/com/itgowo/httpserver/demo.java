@@ -95,7 +95,12 @@ public class demo {
 
         });
         miniHttpServer.startServer();
-
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        miniHttpServer.stopServer();
     }
 
 }

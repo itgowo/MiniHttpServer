@@ -1,8 +1,8 @@
 package com.itgowo.httpserver;
 
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -82,6 +82,18 @@ public class MiniHttpServer extends Thread {
 
     public synchronized void stopServer() {
         isRunning = false;
+        threadPoolExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Socket socket = null;
+                try {
+                    java.lang.Thread.sleep(300);
+                    socket = new Socket("localhost", serverSocketChannel.socket().getLocalPort());
+                    socket.getOutputStream().write("close".getBytes());//任意数据
+                } catch (Exception e) {
+                }
+            }
+        });
     }
 
     @Override
