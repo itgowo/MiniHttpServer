@@ -27,14 +27,14 @@ Mac OS 10、Java 1.8、IDEA（Gradle工程）
 <dependency>
   <groupId>com.itgowo</groupId>
   <artifactId>MiniHttpServer</artifactId>
-  <version>0.0.16</version>
+  <version>0.0.17</version>
   <type>pom</type>
 </dependency>
 ```
 
 2. Gradle
 ```
-implementation 'com.itgowo:MiniHttpServer:0.0.16'
+implementation 'com.itgowo:MiniHttpServer:0.0.17'
 ```
 
 ### 五：初始化(库Jar中有Demo类，可以参考)
