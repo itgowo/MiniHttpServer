@@ -66,7 +66,7 @@ public class MiniHttpServer extends Thread {
 
     public void startServer() {
         try {
-            serverSocketChannel.bind(socketAddress);
+            serverSocketChannel.socket().bind(socketAddress);
             httpListener.onServerStarted(serverSocketChannel.socket().getLocalPort());
         } catch (IOException e) {
             httpListener.onError(e);
