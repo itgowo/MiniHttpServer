@@ -100,7 +100,7 @@ public class demo {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        miniHttpServer.stopServer();
+//        miniHttpServer.stopServer();
     }
 
 }

@@ -1,5 +1,5 @@
 group 'com.itgowo'
-version '0.0.21'
+version '0.0.22'
 
 apply plugin: 'java'
 apply plugin: 'com.novoda.bintray-release'//添加
@@ -30,7 +30,7 @@ publish {
     userOrg = 'itgowo'
     groupId = 'com.itgowo'
     artifactId = 'MiniHttpServer'
-    publishVersion = '0.0.21'
+    publishVersion = '0.0.22'
     desc = 'mini http server for Java (android)'
     website = 'https://github.com/itgowo/MiniHttpServer'
 }

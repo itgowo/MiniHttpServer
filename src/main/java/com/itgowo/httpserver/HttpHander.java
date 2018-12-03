@@ -104,7 +104,7 @@ public class HttpHander implements Runnable {
             byte[] bytes = new byte[endPosition];
             byteBuffer.get(bytes, 0, endPosition);
             parseHttpHeader(new String(bytes, "utf-8"), httpRequestHander, byteBuffer.limit() - endPosition);
-            InetAddress inetAddress = ((InetSocketAddress) socketChannel.getRemoteAddress()).getAddress();
+            InetAddress inetAddress = ((InetSocketAddress) socketChannel.socket().getRemoteSocketAddress()).getAddress();
             httpRequestHander.setRemoteIp(inetAddress.isLoopbackAddress() || inetAddress.isAnyLocalAddress() ? "127.0.0.1" : inetAddress.getHostAddress().toString());
             byteBuffer.position(endPosition);//读位置移动到body开始位置
             parseBody(httpRequestHander, byteBuffer);
