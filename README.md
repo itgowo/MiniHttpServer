@@ -4,7 +4,7 @@
 
 ### 一：开发环境
 Mac OS 10、Java 1.8、IDEA（Gradle工程）
-### Android设备需要API>=24(Android 7.0)，Java支持Nio的版本即可。
+
 ### 二：介绍
 
 一款基于Java Nio实现的Http解析框架，支持常见的请求解析和逻辑；采用单线程解析多线程业务处理方案，内置线程池方便线程管理；支持静态文件下载；支持表单参数和文件上传，支持PUT文件上传。解析成功后返回HttpRequest和HttpResponse。除常见的接口请求返回外，HttpResponse可以向客户端发送跨域请求结果，也可以发送文件，支持区分附件模式。
@@ -27,14 +27,14 @@ Mac OS 10、Java 1.8、IDEA（Gradle工程）
 <dependency>
   <groupId>com.itgowo</groupId>
   <artifactId>MiniHttpServer</artifactId>
-  <version>0.0.17</version>
+  <version>0.0.21</version>
   <type>pom</type>
 </dependency>
 ```
 
 2. Gradle
 ```
-implementation 'com.itgowo:MiniHttpServer:0.0.17'
+implementation 'com.itgowo:MiniHttpServer:0.0.21'
 ```
 
 ### 五：初始化(库Jar中有Demo类，可以参考)
@@ -211,7 +211,7 @@ public void onHandler(HttpRequest httpRequest, HttpResponse httpResponse) throws
 |[RemoteDataControllerForServer](https://github.com/itgowo/RemoteDataControllerForServer)|Java|[简书](https://www.jianshu.com/p/3858c7e26a98)|运行Java的设备|远程数据调试Server端|
 |[MiniHttpClient](https://github.com/itgowo/MiniHttpClient)|Java|[简书](https://www.jianshu.com/p/41b0917271d3)|运行Java的设备|精简的HttpClient|
 |[MiniHttpServer](https://github.com/itgowo/MiniHttpServer)|Java|[简书](https://www.jianshu.com/p/de98fa07140d)|运行Java的设备|支持部分Http协议的Server|
-|[MiniLongConnectionServer](https://github.com/itgowo/MiniLongConnectionServer)|Java|[简书](https://www.jianshu.com/p/4b993100eae5)|运行Java的设备|TCP长连接库，支持粘包拆包处理|
+|[MiniTCPClient](https://github.com/itgowo/MiniTCPClient)|Java|[简书](https://www.jianshu.com/p/4b993100eae5)|运行Java的设备|TCP长连接库，支持粘包拆包处理|
 |[PackageMessage](https://github.com/itgowo/PackageMessage)|Java|[简书](https://www.jianshu.com/p/8a4a0ba2f54a)|运行Java的设备|TCP粘包与半包解决方案|
 |[ByteBuffer](https://github.com/itgowo/ByteBuffer)|Java|[简书](https://www.jianshu.com/p/ba68224f30e4)|运行Java的设备|二进制处理工具类|
 |[DataTables.AltEditor](https://github.com/itgowo/DataTables.AltEditor)|JavaScript|[简书](https://www.jianshu.com/p/a28d5a4c333b)|浏览器|Web端表格编辑组件|
